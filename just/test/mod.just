@@ -15,7 +15,6 @@ unit:
     cd apps/dpi-sdk && npm run check && npm test
     cd apps/dpi-backend && npm run check && npm test
     cd apps/dpi-playground && npm run build && npm run lint && npm test
-    cd apps/dpi-tui && npm run check && npm test
 
 # Web UI suite against two faux devices (builds the UI first)
 [no-cd]
@@ -32,12 +31,3 @@ device DEVICE:
 devices:
     for d in $(just net ids); do just test device "$d" || exit 1; done
 
-# TUI smoke: faux, or a device id
-[no-cd]
-smoke TARGET="faux":
-    apps/dpi-tui/tests/smoke.sh "$1"
-
-# TUI + web + restart + fork scenario
-[no-cd]
-e2e DEVICE:
-    cd apps/dpi-playground && DPI_DEVICE="$1" node tests/e2e-network.mjs

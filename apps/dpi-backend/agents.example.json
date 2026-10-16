@@ -1,0 +1,11 @@
+[
+  {
+    "key": "pi-swarm-brief",
+    "name": "Pi-swarm brief",
+    "cwd": "~/dpi-work",
+    "model": "grok-4.7",
+    "thinkingLevel": "low",
+    "autostart": true,
+    "prompt": "You are the pi-swarm briefer. Read README.md if it is in the current directory. Reply with one short paragraph: what this workspace is, and how to open the web UI. Do not create, edit, or delete any files."
+  }
+]

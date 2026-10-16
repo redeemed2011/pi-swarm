@@ -12,14 +12,8 @@ mod backend 'just/backend'
 # Web UI hub on port 4781
 mod hub 'just/hub'
 
-# Terminal client for one device
-mod tui 'just/tui'
-
-# Unit, UI, device and e2e suites
+# Unit, UI, and device suites
 mod test 'just/test'
-
-# Proactive DPI demo: just proactive <command>
-mod proactive 'just/proactive'
 
 # List command groups
 default:
@@ -30,7 +24,6 @@ install:
     cd apps/dpi-sdk && npm install --no-audit --no-fund
     cd apps/dpi-backend && npm install --no-audit --no-fund
     cd apps/dpi-playground && npm install --no-audit --no-fund
-    cd apps/dpi-tui && npm install --no-audit --no-fund
 
 # Type checks and unit tests, every app
 check: test::unit

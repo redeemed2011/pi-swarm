@@ -1,6 +1,6 @@
 # dpi-sdk
 
-The shared contract of the Durable Agent Network. Every client in this repo (the hub, the web client, `dpi-tui`, the test suites and `just net`) builds on it, and so can yours. It has no runtime dependencies in `src/`, and everything outside `src/node/` also runs in browsers. `src/node/` uses `yaml`, `node:sqlite` and child processes, so it needs Node 22.19 or newer (the repo pins 24).
+The shared contract of the Durable Agent Network. The hub, the web client, the test suites and `just net` build on it. It has no runtime dependencies in `src/`, and everything outside `src/node/` also runs in browsers. `src/node/` uses `yaml`, `node:sqlite` and child processes, so it needs Node 22.19 or newer (the repo pins 24).
 
 The apps import it by relative path (`../../dpi-sdk/src/client.ts`, or `@sdk/*` in the Vite client). It is not published to npm.
 
@@ -12,7 +12,7 @@ The apps import it by relative path (`../../dpi-sdk/src/client.ts`, or `@sdk/*` 
 | `src/client.ts` | `DpiClient` (device, tree, dirs, sessions, createSession, device docs and events, plus raw `request` and `stream`), `SessionHandle` (get, rename, archive, agents, createAgent, tasks, abortTask, inspect, compaction, setCompaction, submission, events), `AgentHandle` (get, rename, `send` with a `whenBusy` of follow-up, steer or reject, withdraw, abort, fork, config, configure, compact, reset, entries, transcript, doc, extensions, setExtension, demo for App State edits and job runs, events) and `follow()`, which keeps a stream open with backoff |
 | `src/sse.ts` | `readSse()`, a fetch-based SSE reader that works in browsers and Node |
 | `src/models.ts` | Reducers that turn frames into view state: `AgentModel` (transcript items, live tools, inbox, usage), `SessionModel` (agents, tasks, lineage) and `NetworkModel` with `networkTree()` |
-| `src/transcript.ts` | `toTranscript()` (the items both clients render), `toMarkdown()`, `sumUsage()` and message text helpers |
+| `src/transcript.ts` | `toTranscript()` (the items the web client renders), `toMarkdown()`, `sumUsage()` and message text helpers |
 | `src/app-state.ts` | App State paths and changes: `readState()`, `changeState()`, `replaceState()` |
 | `src/jobs.ts` | Durable job definitions and run records (`JobDef`, `JobRun`, the `demo.job-runs` document) |
 | `src/errors.ts` | `DpiError` with the API error code, and `isDpiError()` |

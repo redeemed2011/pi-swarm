@@ -38,8 +38,8 @@ import { homedir, hostname, platform } from "node:os";
 import { randomUUID } from "node:crypto";
 import { BACKGROUND_CONTEXT as ctx, withAbortSignal } from "@earendil-works/chord/context";
 import { createModels } from "@earendil-works/pi-ai/models";
-import { openrouterProvider } from "@earendil-works/pi-ai/providers/openrouter";
-import { curatedModels, defaultModelId } from "./model-catalog.js";
+import { GROK_PROVIDER, grokCliProvider } from "./grok.js";
+import { defaultModelId, grokModels } from "./model-catalog.js";
 import { fauxModels, installFaux } from "./faux.js";
 import {
   Harness,
@@ -90,7 +90,7 @@ export interface StoreOptions {
   dataDir: string;
   startDirs: string[];
   name: string;
-  provider: "openrouter" | "faux";
+  provider: "grok-cli" | "faux";
 }
 
 /** Agent documents a client may read or stream, by kind. */
@@ -178,16 +178,7 @@ export class Store {
 
   private constructor(readonly options: StoreOptions) {
     if (options.provider === "faux") installFaux(this.models);
-    else {
-      const provider = openrouterProvider();
-      const catalog = provider.getModels();
-      for (const model of curatedModels)
-        if (!catalog.some((m) => m.id === model.id)) throw Error(`OpenRouter catalog missing ${model.id}`);
-      this.models.setProvider({
-        ...provider,
-        getModels: () => catalog.filter((m) => curatedModels.some((c) => c.id === m.id)),
-      });
-    }
+    else this.models.setProvider(grokCliProvider());
     mkdirSync(options.dataDir, { recursive: true, mode: 0o700 });
     this.unlockCatalog = lockFile(`${this.catalogPath}.lock`);
     this.catalog = new DatabaseSync(this.catalogPath);
@@ -279,20 +270,24 @@ export class Store {
         reasoning: false,
         cost: { input: 0, output: 0 },
       }));
-    const available = await this.models.getAvailable("openrouter", { signal: AbortSignal.timeout(10000) });
-    return curatedModels.flatMap((c) => {
-      const m = available.find((m) => m.id === c.id);
-      return m
+    const available = await this.models.getAvailable(GROK_PROVIDER, { signal: AbortSignal.timeout(10000) });
+    if (!available.length)
+      throw Error(
+        "Grok CLI is not signed in. Log in with Pi (provider Grok CLI), or set GROK_CLI_OAUTH_TOKEN.",
+      );
+    return grokModels.flatMap((model) => {
+      const known = available.find((item) => item.id === model.id);
+      return known
         ? [
             {
-              id: m.id,
-              provider: "openrouter",
-              name: c.name,
-              tier: c.tier,
-              icon: c.icon,
-              contextWindow: m.contextWindow,
-              reasoning: m.reasoning,
-              cost: { input: m.cost.input, output: m.cost.output },
+              id: known.id,
+              provider: GROK_PROVIDER,
+              name: model.name,
+              tier: model.tier,
+              icon: model.icon,
+              contextWindow: known.contextWindow,
+              reasoning: known.reasoning,
+              cost: { input: known.cost.input, output: known.cost.output },
             },
           ]
         : [];
@@ -304,11 +299,8 @@ export class Store {
       const id = fauxModels.some((m) => m.id === model?.modelId) ? model!.modelId : fauxModels[0].id;
       return { provider: "faux", modelId: id };
     }
-    const exact = model?.provider === "openrouter" ? model.modelId : `${model?.provider}/${model?.modelId}`;
-    return {
-      provider: "openrouter",
-      modelId: curatedModels.some((m) => m.id === exact) ? exact : defaultModelId,
-    };
+    const id = model?.provider === GROK_PROVIDER && grokModels.some((item) => item.id === model.modelId) ? model.modelId : defaultModelId;
+    return { provider: GROK_PROVIDER, modelId: id };
   }
 
   validateModel(model: unknown): ModelRef {
@@ -318,8 +310,8 @@ export class Store {
     const known =
       this.options.provider === "faux"
         ? m.provider === "faux" && fauxModels.some((f) => f.id === m.modelId)
-        : m.provider === "openrouter" &&
-          curatedModels.some((c) => c.id === m.modelId) &&
+        : m.provider === GROK_PROVIDER &&
+          grokModels.some((item) => item.id === m.modelId) &&
           !!this.models.getModel(m.provider, m.modelId);
     if (!known) throw invalid(`Unknown model ${m.provider}/${m.modelId}. Choose one from GET /v1/device models`);
     return { provider: m.provider, modelId: m.modelId };

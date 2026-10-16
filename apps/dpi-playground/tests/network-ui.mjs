@@ -256,22 +256,11 @@ try {
   await expect(toolRow("bash")).not.toHaveClass(/disabled/);
   pass("read only disables the tools that write, then restores them");
 
-  // Extensions: custom harness capabilities turn on and off per agent and apply from the next request.
+  // Extensions: the system-prompt checklist turns on per agent and survives a reload.
   await tab("Extend");
-  await expect(page.locator(".ext-card")).toHaveCount(2);
-  const jevSwitch = page.getByRole("switch", { name: "Jev damage control" });
-  await expect(jevSwitch).toHaveAttribute("aria-checked", "false");
-  await jevSwitch.click();
-  await expect(jevSwitch).toHaveAttribute("aria-checked", "true");
-  await send("!rm -rf nothing-here");
-  await expect(chat()).toContainText("jev-damage-control blocked this command", { timeout: 15000 });
-  await jevSwitch.click();
-  await expect(jevSwitch).toHaveAttribute("aria-checked", "false");
+  await expect(page.locator(".ext-card")).toHaveCount(1);
   await page.getByRole("switch", { name: "System prompts" }).click();
-  await jevSwitch.click();
   await expect(page.getByRole("switch", { name: "System prompts" })).toHaveAttribute("aria-checked", "true");
-  await expect(jevSwitch).toHaveAttribute("aria-checked", "true");
-  await jevSwitch.click();
   await page.getByRole("checkbox", { name: "one_sentence.md" }).check();
   await page.reload();
   await tab("Extend");
@@ -280,7 +269,7 @@ try {
   await expect(page.getByRole("checkbox", { name: "smart_ass_opus_fix.md" })).toBeChecked();
   await page.getByRole("switch", { name: "System prompts" }).click();
   await expect(page.getByRole("switch", { name: "System prompts" })).toHaveAttribute("aria-checked", "false");
-  pass("extensions: jev-damage-control blocks rm -rf while on; both stack; the prompt checklist persists");
+  pass("extensions: system-prompts checklist persists across reload");
 
   // App State: live controls and the JSON editor with its revision guard.
   await tab("State");

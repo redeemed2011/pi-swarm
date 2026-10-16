@@ -1,6 +1,6 @@
 # dpi-backend API v1
 
-The contract every Durable Agent Network client uses: the web hub, `dpi-tui`, scripts, other agents. Types live in [`../dpi-sdk/src/api.ts`](../dpi-sdk/src/api.ts). [`../dpi-sdk/src/client.ts`](../dpi-sdk/src/client.ts) is a typed client for browsers and Node.
+The HTTP contract the web hub uses. Types live in [`../dpi-sdk/src/api.ts`](../dpi-sdk/src/api.ts). [`../dpi-sdk/src/client.ts`](../dpi-sdk/src/client.ts) is a typed client for browsers and Node.
 
 ## Conventions
 
@@ -40,7 +40,7 @@ The contract every Durable Agent Network client uses: the web hub, `dpi-tui`, sc
 | `POST .../agents/:a/abort` | `{background?}` | stops foreground work (and background with `true`) |
 | `POST .../agents/:a/fork` | `{entryId, name?}` | `201 AgentSummary` |
 | `GET / PATCH .../agents/:a/config` | `{model?, thinkingLevel?, instructions?, cwd?, readOnly?}` | config; applies from the next request. `readOnly` filters the agent's tools to the ones that only read |
-| `GET / PATCH .../agents/:a/extensions` | PATCH `{name, enabled}` or `{prompt, enabled}` | `{extensions, builtIn}`: the custom extensions `system-prompts` (a checklist of the prompts in `prompts/`) and `jev-damage-control` (Jev judges each bash command and blocks destructive ones; the command goes to the Jev API, and a Jev error lets it run). Both are off by default. A change applies from the agent's next request |
+| `GET / PATCH .../agents/:a/extensions` | PATCH `{name, enabled}` or `{prompt, enabled}` | `{extensions, builtIn}`: the custom extension `system-prompts` (a checklist of the prompts in `prompts/`, off by default). A change applies from the agent's next request |
 | `POST .../agents/:a/compact` | `{instructions?}` | `{taskId}` |
 | `POST .../agents/:a/reset` | `{note?}` | `{ok}` |
 | `GET .../agents/:a/docs/:kind` | `demo.job-runs` | `{kind, value}` |

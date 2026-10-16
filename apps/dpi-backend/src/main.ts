@@ -7,6 +7,7 @@ import { Store } from "./store.js";
 import { bearerAuth } from "./auth.js";
 import { errorMiddleware } from "./errors.js";
 import { v1 } from "./routes.js";
+import { agentsFile, startSavedAgents } from "./saved-agents.js";
 
 const config = loadConfig();
 const store = await Store.open({
@@ -32,6 +33,11 @@ server.listen(config.port, config.host, () => {
     for (const addresses of Object.values(networkInterfaces()))
       for (const a of addresses ?? [])
         if (a.family === "IPv4" && !a.internal) console.log(`LAN: http://${a.address}:${config.port}`);
+  const file = agentsFile();
+  void startSavedAgents(store, file).then((started) => {
+    for (const result of started) console.log(`saved agent: ${result.session.name} (${result.session.id})`);
+    if (!started.length) console.log(`saved agents: none autostarted (${file})`);
+  });
 });
 
 let closing = false;

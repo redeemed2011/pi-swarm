@@ -1,4 +1,4 @@
-// Composer slash commands: the same names as dpi-tui. Unknown commands are sent to the agent as text.
+// Composer slash commands. Unknown commands are sent to the agent as text.
 import { THINKING_LEVELS, type ThinkingLevel } from "@sdk/api";
 import {
   agentHandle,

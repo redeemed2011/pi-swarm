@@ -2120,11 +2120,6 @@ textarea.app-state-json {
   background: #fff;
   flex-shrink: 0;
 }
-img[src$="openai.png"] {
-  background: #242024;
-  padding: 3px;
-  border-color: #81747a;
-}
 button:disabled {
   opacity: 1;
   color: #d4c7ca;

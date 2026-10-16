@@ -2,8 +2,8 @@
 #
 #   cp dpi-network.example.yaml dpi-network.yaml
 #
-# Every device runs apps/dpi-backend. Clients (the web hub, dpi-tui, curl) connect with a URL and a
-# bearer token. No code or recipe names a machine: `just net <verb> <id>` looks the id up here and
+# Every device runs apps/dpi-backend. The web hub connects with a URL and a bearer token.
+# No code or recipe names a machine: `just net <verb> <id>` looks the id up here and
 # runs the driver for its `kind`.
 #
 #   just net up <id>        provision → deploy → env → service → (expose) → register, idempotent
@@ -35,7 +35,7 @@ defaults:
   code_dir: ~/dpi                  # where apps/dpi-backend + apps/dpi-sdk are synced (ssh / exe-dev)
   home_dir: ~/.dpi                 # backend.env, data and logs; deploys never touch it
   start_dirs: ["~/dpi-work"]       # where new sessions start (created if missing); any existing folder works as a cwd
-  env_keys: [OPENROUTER_API_KEY]   # secrets: copied by name from .env, never written here
+  env_keys: []                     # Grok CLI auth is the device's Pi login (~/.pi/grok-cli)
   # env:                           # plain settings, written as-is
   #   DPI_PROVIDER: faux           # the free deterministic model, for tests
 

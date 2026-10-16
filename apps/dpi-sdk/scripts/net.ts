@@ -14,7 +14,7 @@ const fail = (message: string): never => {
 };
 
 const HELP = `net <verb> [device] [args]
-  ls | status [device]       devices from dpi-network.yaml (+ dpi-tui --save), probed live
+  ls | status [device]       devices from dpi-network.yaml, probed live
   ids                        device ids from dpi-network.yaml, one per line
   up <device>                every step the device's kind supports (idempotent)
   create | provision | deploy | env | service | expose | register <device>

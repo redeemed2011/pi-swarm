@@ -13,7 +13,7 @@ export interface BackendConfig {
   envFile: string;
   dataDir: string;
   startDirs: string[];
-  provider: "openrouter" | "faux";
+  provider: "grok-cli" | "faux";
   token: string;
 }
 
@@ -41,9 +41,11 @@ export function loadConfig(argv = process.argv.slice(2), env = process.env): Bac
       .split(":")
       .filter(Boolean)
       .map((p) => resolve(expand(p))),
-    provider: (env.DPI_PROVIDER ?? "openrouter") === "faux" ? "faux" : "openrouter",
+    provider: env.DPI_PROVIDER === "faux" ? "faux" : "grok-cli",
     token: env.DPI_TOKEN ?? "",
   };
+  if (env.DPI_PROVIDER && env.DPI_PROVIDER !== "faux" && env.DPI_PROVIDER !== "grok-cli")
+    throw Error(`DPI_PROVIDER must be grok-cli or faux, got ${env.DPI_PROVIDER}`);
   if (!Number.isInteger(config.port) || config.port < 1 || config.port > 65535)
     throw Error(`Invalid port: ${config.port}`);
   if (config.token.length < 32)
